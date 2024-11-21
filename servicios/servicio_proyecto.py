@@ -13,18 +13,32 @@ USUARIOS = db.collection('usuarios')
 def crear_proyecto():
    try:
        datos = request.get_json()
+       
+
+       docente_data = None
+       if datos.get('docente_id'):
+           docente_ref = USUARIOS.document(datos.get('docente_id')).get()
+           if docente_ref.exists:
+               docente_data = docente_ref.to_dict()
+               docente_data['uid'] = docente_ref.id  # Añadir el ID del docente
+           else:
+               return jsonify({'error': 'Docente no encontrado'}), 404
+
+
        doc_ref = PROYECTOS.add({
            'titulo': datos.get('titulo'),
            'descripcion': datos.get('descripcion'),
            "fases": {
-            "planificacion": {"completada": False, "entregas": []},
-            "desarrollo": {"completada": False, "entregas": []},
-            "evaluacion": {"completada": False, "entregas": []}},
+               "planificacion": {"completada": False, "entregas": []},
+               "desarrollo": {"completada": False, "entregas": []},
+               "evaluacion": {"completada": False, "entregas": []}
+           },
            'estado': 'activo',
            'fecha_inicio': datos.get('fecha_inicio'),
            'fecha_fin': datos.get('fecha_fin'),
            'lider_id': datos.get('lider_id'),
            'docente_id': datos.get('docente_id'),
+           'docente': docente_data,  # Guardar toda la información del docente
            'colaboradores': datos.get('colaboradores_id'),
            'tareas': [],
            'fecha_creacion': str(datetime.now())
@@ -36,6 +50,7 @@ def crear_proyecto():
        })
    except Exception as e:
        return jsonify({'error': str(e)}), 400
+   
 
 @proyecto_bp.route('/proyecto/<proyecto_id>/nueva-tarea', methods=['POST'])
 def crear_tarea(proyecto_id):

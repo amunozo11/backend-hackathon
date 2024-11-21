@@ -6,6 +6,7 @@ from servicios.servicio_programa import programa_bp
 from servicios.servicio_proyecto import proyecto_bp
 from servicios.servicio_colaborador import colaborador_bp
 from servicios.servicio_docente import docente_bp
+from servicios.servicio_director import director_bp
 
 app = Flask(__name__)
 CORS(app)
@@ -22,6 +23,7 @@ app.register_blueprint(programa_bp, url_prefix='/programa')
 app.register_blueprint(proyecto_bp, url_prefix='/proyecto')
 app.register_blueprint(colaborador_bp, url_prefix='/colaborador')
 app.register_blueprint(docente_bp, url_prefix='/docente')
+app.register_blueprint(director_bp, url_prefix='/director')
 
 @app.route('/test')
 def test():

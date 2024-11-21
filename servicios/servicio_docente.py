@@ -10,14 +10,17 @@ PROYECTOS = db.collection('proyectos')
 
 @docente_bp.route('/mis-proyectos/<docente_id>', methods=['GET'])
 def obtener_proyectos(docente_id):
-   try:
-       proyectos = PROYECTOS.where('docente_id', '==', docente_id).get()
-       return jsonify([{
-           'id': p.id,
-           **p.to_dict()
-       } for p in proyectos])
-   except Exception as e:
-       return jsonify({'error': str(e)}), 400
+    try:
+        print(f"Obteniendo proyectos para docente_id: {docente_id}")  # Log
+        proyectos = PROYECTOS.where('docente_id', '==', docente_id).get()
+        return jsonify([{
+            'id': p.id,
+            **p.to_dict()
+        } for p in proyectos])
+    except Exception as e:
+        print(f"Error: {e}")  # Log del error
+        return jsonify({'error': str(e)}), 400
+
 
 @docente_bp.route('/<proyecto_id>/comentar', methods=['POST'])
 def comentar_proyecto(proyecto_id):
@@ -67,7 +70,7 @@ def obtener_docente(id):
         docente = docente_ref.get()
 
         if docente.exists:
-            return jsonify({docente.to_dict()})
+            return jsonify(docente.to_dict())
         else:
             return jsonify({'error': 'Docente no encontrado'}), 404
     except Exception as e:
@@ -77,7 +80,7 @@ def obtener_docente(id):
 # Script de prueba
 def test_docente():
    BASE_URL = 'http://localhost:5000/docente'
-   DOCENTE_ID = "V1mfUZxuFcOHRAr7oDRN8OPDHTr2"  # ID del docente
+   DOCENTE_ID = {"uid"}  # ID del docente
 
    # Ver proyectos asignados
    response = requests.get(f'{BASE_URL}/mis-proyectos/{DOCENTE_ID}')
